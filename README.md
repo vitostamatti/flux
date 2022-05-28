@@ -5,6 +5,7 @@
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/vitostamatti/wrangler.svg)](https://github.com/vitostamatti/wrangler/pulls)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
+
 ## 📝 Table of Contents
 
 
