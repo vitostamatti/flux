@@ -14,7 +14,7 @@
 
 ## About <a name = "about"></a>
 
-To complete soon...
+To complete soon.
 
 ## Setup <a name = "setup"></a>
 
