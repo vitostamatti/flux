@@ -1,0 +1,11 @@
+inputs:
+  dataset1:
+    data: DataFrame
+    type: PandasDataset
+  dataset2:
+    data: DataFrame
+    type: PandasDataset
+outputs:
+  abt:
+    data: DataFrame
+    type: PandasDataset

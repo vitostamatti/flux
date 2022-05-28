@@ -1,0 +1,16 @@
+digraph wrangler {
+	node [height=.1 shape=record]
+	node_data_0 [label="Data | { Name | Type} | {titanic|CSVDataset(name='titanic', filename='../data/titanic_train.csv')}"]
+	node0 [label="Node | {Name | Transformer |Inputs | Outputs} | {drop id y textos|ColumnDropper(columns=['PassengerId', 'Name', 'Ticket', 'Cabin', 'Embarked'])|['titanic']|['titanic_pro']}"]
+	node1 [label="Node | {Name | Transformer |Inputs | Outputs} | {one hot encode sex|OneHotTransformer(column='Sex', encoder=OneHotEncoder, one_hot_columns=ndarray)|['titanic_pro']|['titanic_pro']}"]
+	node2 [label="Node | {Name | Transformer |Inputs | Outputs} | {fillna numericos|DataframeTransformer(function=fillna_numerics)|['titanic_pro']|['titanic_pro']}"]
+	node3 [label="Node | {Name | Transformer |Inputs | Outputs} | {split target|SplitFeaturesTarget(target='Survived')|['titanic_pro']|['titanic_X', 'titanic_y']}"]
+	node4 [label="Node | {Name | Transformer |Inputs | Outputs} | {evaluacion|ClassificationModelEvaluator(name='rf_clf_eval', model=RandomForestClassifier, test_size=0.2, output_dir='../data/', _X_test=DataFrame, _y_test=DataFrame)|['titanic_X', 'titanic_y']|['titanic_X', 'titanic_y']}"]
+	node5 [label="Node | {Name | Transformer |Inputs | Outputs} | {prediccion|SklearnModelTransformer(name='rf_clf', model=RandomForestClassifier)|['titanic_X', 'titanic_y']|['titanic_pred']}"]
+	node_data_0 -> node0
+	node0 -> node1
+	node1 -> node2
+	node2 -> node3
+	node3 -> node4
+	node4 -> node5
+}

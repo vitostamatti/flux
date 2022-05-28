@@ -1,0 +1,13 @@
+inputs:
+  titanic:
+    filename: ../data/titanic_train.csv
+    save_params:
+      index: false
+    type: CSVDataset
+outputs:
+  model_report:
+    data: DataFrame
+    type: PandasDataset
+  titanic_pred:
+    data: DataFrame
+    type: PandasDataset
