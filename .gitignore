@@ -1,15 +1,11 @@
 /venv
 /wrangler.egg-info
-# /notebooks
 /build
 desktop.ini
 .vscode
 __pycache__
 .env
 /docs/build
-
 /tests
-
 utils.md
-
 /docs

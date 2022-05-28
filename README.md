@@ -37,4 +37,4 @@ usage for each object in this repo.
 
 
 ## License
-[MIT](LICENSE.TXT)
+[MIT](LICENSE.txt)
