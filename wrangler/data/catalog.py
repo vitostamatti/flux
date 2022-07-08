@@ -1,10 +1,15 @@
 # Class for Orchestrating de Datasets
-from wrangler.data.datasets import PandasDataset, AbstractDataset
-from typing import Any
-from loguru import logger
+from wrangler.data.datasets import MemoryDataset, AbstractDataset
+from typing import Any,Dict, Union, List
+import logging
+import pprint
 
-class DataCatalog():
+
+
+class DataCatalog(object):
     '''
+    Object used to register, load and save a collection of datasets
+
 
     Attributes:
         datasets (dict): names and implementations of an AbstractDataset.
@@ -13,62 +18,122 @@ class DataCatalog():
 
         .. code-block:: python
 
-            cars_data = pd.DataFrame({
-                "cars":["car1", "car2", "car3", "car4"],
-            })
-            cars = PandasDataset(data=cars_data, name='cars')
             catalog = DataCatalog()
-            catalog.add(cars)
-            df = catalog.load("cars")  
-
+            dataset = MemoryDataset()
+            catalog.add(
+                name = "mydataset",
+                dataset = dataset
+            )
     '''
 
-    def __init__(self, datasets=None) -> None:
-        self.datasets = {} if datasets is None else datasets
+    def __init__(self, datasets:Dict[str,AbstractDataset]=None) -> None:
+        self._datasets = {} if datasets is None else datasets
 
     @property
     def _logger(self):
-        return logger
+        return logging.getLogger(__name__)
 
-    def load(self, name:str):
-        '''Returns the data of the dataset name registered.
+    @property
+    def datasets(self):
+        return self._datasets
+        
+
+    def load(self, names:Union[str,List[str]])->Dict:
+        """
+        Returns the data of the dataset name registered.
         Useful for inputs
-        '''
-        if name not in self.datasets:
-            raise Exception(f"Dataset {name} not registered in data catalog")
-        else:
-            # self._logger.info(f"Loading dataset: {name}")
-            dataset = self.datasets.get(name)
-        return dataset.load()
+
+        Raises:
+            Exception: if the any of the names provided is not registered in the catalog
+
+        Returns:
+            Dict: a dictionary of {name:dataset}.
+        """
+        if isinstance(names,str):
+            if names not in self.datasets:
+                msg = f"Dataset {names} not registered in data catalog"
+                self._logger.error(msg)
+                raise Exception(msg)
+            else:
+                # self._logger.info(f"Loading dataset: {name}")
+                data = {names: self.datasets[names].load()}
+            return data
+        elif isinstance(names, list):
+            data = {}
+            for n in names:
+                if n not in self.datasets:
+                    msg = f"Dataset {n} not registered in data catalog"
+                    self._logger.error(msg)
+                    raise Exception(msg)
+                data[n]=self.datasets[n].load()
+            return data
+
         
     def save(self, name:str, data:Any):
-        '''Saves de data to the dataset name registered.
+        """
+        Saves de data to the dataset name registered.
         Useful for outputs
-        '''
-        # self._logger.info(f"Saving dataset: {name}")
+
+        Args:
+            name (str): name of the dataset to save.
+            data (Any): data to save in the dataset.
+        """
+        self._logger.info(f"Saving dataset: {name}")
 
         if name not in self.datasets:
-            new_dataset = PandasDataset(name, data)
-            self.add(new_dataset)
+            new_dataset = MemoryDataset(data)
+            self.add(name, new_dataset)
         else:
             dataset = self.datasets.get(name)
             dataset.save(data)
 
-    def add(self, dataset:AbstractDataset):
-        '''Register a new dataset with a given name.
-        '''
-        self._logger.info(f"Adding dataset: {dataset.name}")
-        self.datasets[dataset.name] = dataset
 
-    def release(self, name):
-        '''Removes a dataset from the registered datasets.
-        '''
+    def add(self,  name:str, dataset:AbstractDataset):
+        """Add a new dataset to the catalog.
+
+        Args:
+            name (str): name to identify the dataset
+            dataset (AbstractDataset): the dataset object
+        """
+
+        self._logger.info(f"Adding dataset: {name}")
+        self._datasets[name] = dataset
+
+
+    def register(self,  name:str, dataset:AbstractDataset):
+        """Register a new dataset with a given name.
+
+        Args:
+            name (str): name to identify the dataset
+            dataset (AbstractDataset): the dataset object
+        """
+
+        self._logger.info(f"Adding dataset: {name}")
+        self._datasets[name] = dataset
+        
+
+    def release(self, name:str):
+        """Removes a dataset from the registered datasets.
+
+        Args:
+            name (str): name of the dataset to remove
+        """
+
         self._logger.info(f"Removing dataset: {name}")
-        del self.datasets[name]
+        
+        del self._datasets[name]
 
     def __str__(self) -> str:
-        return str(self.datasets)
+        return pprint.pformat(self.datasets)
 
     def __repr__(self) -> str:
-        return str(self.datasets)
-        
+        return pprint.pformat(self.datasets)
+
+    def __eq__(self, other) -> bool:
+        return all(
+            [ds in other.datasets for ds in self.datasets] 
+            + 
+            [ds in self.datasets for ds in other.datasets] 
+        )
+        # return self.datasets == other.datasets
+    

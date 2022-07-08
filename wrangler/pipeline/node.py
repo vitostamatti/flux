@@ -1,115 +1,147 @@
-
-from typing import Union, List, Any
-
-from wrangler.base import AbstractTransformer
-
-from wrangler.data.catalog import DataCatalog
-
-from loguru import logger
+from typing import Union,List,AnyStr,Dict, Callable,Any
+import logging
 
 
-class Node():
-    """[summary]
+class FunctionWrapper():
+    pass
+
+class Node(object):
+    """_summary_
 
     Attributes:
-        name (str): identifier name of the node
-        transformer (AbstractTransformer): the transformer to run on this node.
-        inputs (Union[str,List[str]]): the input or list of inputs to pass to the transformer.
-            This depends on the specific parameters of the fit and transform methods of the transformer.
-        outputs (Union[str,List[str]]): the output or list of outputs that returns from the transformer.
+        func (Callable): _description_
+        inputs (Union[AnyStr,List]): _description_
+        outputs (Union[AnyStr,List]): _description_
+        func_kwargs (Union[Dict,None], optional): _description_. Defaults to None.
+        name (AnyStr, optional): _description_. Defaults to None.
+    """
 
-    Example:
+    def __init__(
+            self,
+            func:Callable,
+            inputs:Union[AnyStr,List],
+            outputs:Union[AnyStr,List],
+            func_kwargs:Union[Dict,None]=None,
+            name:AnyStr=None
+        ):
 
-        .. code-block:: python
+        self._name = name
 
-            node = Node(
-                name='first_node',
-                transformer = ColumnDropper(column='useless_col'), 
-                inputs = 'cars',
-                outputs = 'cars_output'
-            ) 
+        if callable(func):
+            self._func = func
+        else:
+            msg = "transformer must be a callable`"
+            self._logger.error(msg)
+            raise ValueError(msg)
 
-    """    
-    def __init__(self, name:str, transformer:AbstractTransformer, 
-        inputs:Union[str,List[str]], outputs:Union[str,List[str]]
-        ) -> None:
+        self._inputs = [inputs] if isinstance(inputs, str) else inputs
         
-        self.name = name
-        self.transformer = transformer
+        self._outputs = [outputs] if isinstance(outputs, str) else outputs
 
-        self.inputs = [inputs] if isinstance(inputs, str) else inputs
-        self.outputs = [outputs] if isinstance(outputs, str) else outputs
+        self._func_kwargs = func_kwargs if func_kwargs else {}
+
+    
+    @property
+    def _logger(self):
+        return logging.getLogger(__name__)
+
+    @property
+    def inputs(self):
+        """List of node inputs"""
+        return self._inputs
+
+    @property
+    def func_kwargs(self):
+        """Dictionary of node function key word arguments"""
+        return self._func_kwargs
+
+    @property
+    def outputs(self):
+        """List of node outputs"""
+        return self._outputs
+
+    @property
+    def _defaut_name(self):
+        return f"{self._func.__name__}"
+
+    @property
+    def name(self) -> str:
+        """Node's name if provided or the name of its function"""
+        node_name = f"{self._name if self._name is not None else self._defaut_name}"
+        return node_name
+
+    @property
+    def _unique_key(self):
+        def hashable(value):
+            if isinstance(value, list):
+                return tuple(value)
+            return value
+
+        return (self.name, hashable(self._inputs), hashable(self._outputs))
+
+    @property
+    def func(self):
+        """Node's function to excecute."""
+        return self._func
         
-        
+    def _format_outputs(self, outputs):
+        if len(self._outputs)==1:
+            outputs = {self._outputs[0]: outputs}
+        else:
+            outputs = dict(zip(self._outputs, outputs))
+        return outputs     
+
+    def run(self, inputs:Dict[str,Any])->Dict:
+        """
+        Excecute the node with the given input data.
+
+        Args:
+            inputs (Dict[str,Any]): the inputs in dictionary form to run the node
+
+        Returns:
+            Dict: node outputs
+        """
+        if not isinstance(inputs, dict):
+            msg = "inputs must be passed as dictionary of {'name':data}"
+            self._logger.error(msg)
+            raise ValueError(msg)
+
+        inputs = [inputs[item] for item in self._inputs]
+
+        try:
+            self._logger.error(f"running {self.name}")
+            outputs_=self._func(*inputs, **self._func_kwargs)
+        except Exception as e:
+            self._logger.error(e)
+            
+        return self._format_outputs(outputs_)   
+
+
     def __str__(self):
-        return ('name={name}\n'
-        'transformer= {transformer}\n'
-        'inputs= {inputs}\n'
-        'outputs= {outputs}\n'
-        ).format(**self.__dict__)
+        def _set_to_str(xset):
+            return f"[{','.join(xset)}]"
+
+        node_str = f"Node: {self._name if self._name else self._defaut_name}"
+
+        in_str = _set_to_str(self._inputs) if self._inputs else "None"
+        out_str = _set_to_str(self._outputs) if self._outputs else "None"
+        
+        tr_str = f"({in_str}) -> {out_str}\n"
+        return node_str + tr_str
 
 
     def __repr__(self):
-        return ('name={name}\n'
-        'transformer= {transformer}\n'
-        'inputs= {inputs}\n'
-        'outputs= {outputs}\n'
-        ).format(**self.__dict__)
+        return self.__str__()
 
-    @property
-    def _logger(self):
-        # return logging.getLogger(self.__module__)
-        # return logging.getLogger((type(self).__name__))
-        # return logging.getLogger(LOGGER_NAME)
-        return logger
+    def __eq__(self, other):
+        if not isinstance(other, Node):
+            return NotImplemented
+        return self._unique_key == other._unique_key
 
-    def fit(self, data_catalog:DataCatalog):
-        if len(self.inputs)==1:
-            inputs = data_catalog.load(self.inputs)
-        else: 
-            inputs = []
-            for input in self.inputs:
-                inputs.append(data_catalog.load(input))
-                
-        self.transformer.fit(inputs)
-        
-        return self
+    def __lt__(self, other):
+        if not isinstance(other, Node):
+            return NotImplemented
+        return self._unique_key < other._unique_key
 
-    def fit_transform(self, data_catalog:DataCatalog):
-        outputs = self._run_node(data_catalog, fit=True)
-        return outputs
-
-    def transform(self,data_catalog:DataCatalog):
-        outputs = self._run_node(data_catalog, fit=False)
-        return outputs
-
-    def _run_node(self, data_catalog, fit:bool=True):
-        self._logger.info(f"Running Node: {self.name}")
- 
-        inputs = self._load_inputs(data_catalog)
-
-        if fit:
-            self.transformer.fit(*inputs)
-        
-        outputs = self.transformer.transform(*inputs)
-
-        self._save_outputs(outputs, data_catalog)
-
-        return outputs 
-
-    def _load_inputs(self, data_catalog:DataCatalog):
-        inputs = []
-        if len(self.inputs)==1:
-            input = data_catalog.load(self.inputs[0])
-            inputs.append(input)
-        else:
-            for input in self.inputs:
-                inputs.append(data_catalog.load(input))
-        return inputs
-    
-    def _save_outputs(self, outputs:Any, data_catalog:DataCatalog):
-        if len(self.outputs)==1:
-            data_catalog.save(self.outputs[0], outputs)
-        else:
-            for idx, output in enumerate(self.outputs):
-                data_catalog.save(output, outputs[idx])
+    def __hash__(self):
+        return hash(self._unique_key)
