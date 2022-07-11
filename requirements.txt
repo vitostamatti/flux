@@ -1,0 +1,10 @@
+pytest
+ipython
+pytest-cov
+openpyxl
+pyarrow
+python-dotenv
+boto3
+pyyaml
+graphviz
+autopep8
