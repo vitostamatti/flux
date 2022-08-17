@@ -1,0 +1,16 @@
+__pycache__
+/build
+.pytest_cache
+/venv
+/htmlcov
+.env
+/wrangler.egg-info
+/docs/build
+
+run_autodoc.sh
+run_tests.sh
+run_build_doc.sh
+
+/scripts
+/notebooks
+/data
