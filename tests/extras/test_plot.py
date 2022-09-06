@@ -1,11 +1,10 @@
 import pytest
 
-from wrangler.extras.plot import plot_wrangler
-from wrangler.data import DataCatalog
-from wrangler.data.datasets import CSVDataset
-from wrangler.core.wrangler import Wrangler
-from wrangler.pipeline import Pipeline, Node
-import pytest
+from flux.extras.plot import plot_flux
+from flux.data import DataCatalog
+from flux.data.datasets import CSVDataset
+from flux.core.flux import Wrangler
+from flux.pipeline import Pipeline, Node
 
 
 

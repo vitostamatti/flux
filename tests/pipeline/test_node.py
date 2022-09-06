@@ -1,4 +1,4 @@
-from wrangler.pipeline import Node
+from flux.pipeline import Node
 
 import pytest
 

@@ -1,7 +1,7 @@
 import pytest
 
-from wrangler.utils.config import load_dataset_object
-from wrangler.data.datasets import (
+from flux.utils.config import load_dataset_object
+from flux.data.datasets import (
     AbstractDataset
 )
 

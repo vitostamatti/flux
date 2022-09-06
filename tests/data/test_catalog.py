@@ -1,5 +1,5 @@
-from wrangler.data.catalog import DataCatalog
-from wrangler.data.datasets import (
+from flux.data.catalog import DataCatalog
+from flux.data.datasets import (
     MemoryDataset
 )
 import pytest

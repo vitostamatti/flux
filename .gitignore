@@ -1,10 +1,11 @@
 __pycache__
 /build
 .pytest_cache
+.coverage
 /venv
 /htmlcov
 .env
-/wrangler.egg-info
+/*.egg-info
 /docs/build
 
 run_autodoc.sh
@@ -12,5 +13,5 @@ run_tests.sh
 run_build_doc.sh
 
 /scripts
-/notebooks
 /data
+/old

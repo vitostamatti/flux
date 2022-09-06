@@ -5,12 +5,12 @@ with open("README.md", 'r') as f:
 
 
 setup(
-    name='wrangler',
+    name='flux',
     version='0.1.0',
-    description='Libreria wrangler',
+    description='Portable Data Science Pipelines',
     long_description=long_description,
     license="MIT",
-    author='Rocking Data',
+    author='Vito Stamatti',
     package_dir={'':'.'},
     packages=find_packages(where='.'),
      #external packages as dependencies
@@ -19,6 +19,6 @@ setup(
         # 'numpy', 
         # 'scikit-learn', 
         'dill', 
-        'loguru', 
+        'PyYAML'
     ],
 ),
