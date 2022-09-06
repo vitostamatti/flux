@@ -8,7 +8,6 @@
 ## 📝 Table of Contents
 
 
-
 - [About](#about)
 - [Setup](#setup)
 - [Usage](#usage)
@@ -37,6 +36,8 @@ usage for each object in this repo.
 ## Roadmap
 
 - [X] First commit of flux
+- [ ] Finish basic usage example
+- [ ] Testing
 
 
 ## License
