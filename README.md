@@ -1,5 +1,10 @@
 # Flux
 
+<p align="center">
+  <a href="" rel="noopener">
+ <img width=250px src="data/flux.png" alt="Project logo"></a>
+</p>
+
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
 [![GitHub Issues](https://img.shields.io/github/issues/vitostamatti/flux.svg)](https://github.com/vitostamatti/flux/issues)
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/vitostamatti/flux.svg)](https://github.com/vitostamatti/flux/pulls)
@@ -37,6 +42,7 @@ usage for each object in this repo.
 
 - [X] First commit of flux
 - [ ] Finish basic usage example
+- [ ] Documentation for flux
 - [ ] Testing
 
 

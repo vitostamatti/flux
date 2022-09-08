@@ -55,6 +55,7 @@ class Pipeline(object):
     def _topo_sorted_nodes(self):
         """List of sorted nodes"""
         return list(toposort(self.node_dependencies))
+        # return list(toposort(self.node_dependencies))
 
 
     @property

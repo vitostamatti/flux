@@ -105,12 +105,10 @@ class Node(object):
 
         inputs = [inputs[item] for item in self._inputs]
 
-        try:
-            self._logger.info(f"Running Node {self.name}")
-            outputs_=self._func(*inputs, **self._func_kwargs)
-        except Exception as e:
-            self._logger.error(e)
-            
+  
+        self._logger.info(f"Running Node {self.name}")
+        outputs_=self._func(*inputs, **self._func_kwargs)
+     
         return self._format_outputs(outputs_)   
 
 
