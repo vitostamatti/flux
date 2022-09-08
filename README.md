@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="" rel="noopener">
- <img width=250px src="figure/flux.png" alt="Project logo"></a>
+ <img width=250px src="figures/flux.png" alt="Project logo"></a>
 </p>
 
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
