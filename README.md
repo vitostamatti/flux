@@ -1,9 +1,7 @@
-# Flux
 
-<p align="center">
-  <a href="" rel="noopener">
- <img width=250px src="figures/flux.png" alt="Project logo"></a>
-</p>
+<h1 align="center">
+  Flux
+</ha>
 
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
 [![GitHub Issues](https://img.shields.io/github/issues/vitostamatti/flux.svg)](https://github.com/vitostamatti/flux/issues)
